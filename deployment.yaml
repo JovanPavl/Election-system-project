@@ -1,0 +1,109 @@
+version: '3'
+
+services:
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+    networks:
+      - redisnet
+  authenticationDatabase:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    healthcheck:
+      test: ["CMD","mysqladmin","ping","h","localhost"]
+      timeout: 10s
+      retries: 10
+    ports:
+      - 3306:3306
+    volumes:
+      - authdata:/var/lib/mysql
+    networks:
+      - authenet
+  authenticationmigrationimage:
+    image: authenticationmigrationimage
+    environment:
+      - DATABASE_URL=authenticationDatabase
+    networks:
+      - authenet
+  authentication:
+    image: authentication
+    environment:
+      - DATABASE_URL=authenticationDatabase
+    depends_on:
+      - authenticationmigrationimage
+    ports:
+      - 5002:5002
+    networks:
+      - authenet
+
+
+  forumDatabase:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    healthcheck:
+      test: [ "CMD","mysqladmin","ping","h","localhost" ]
+      timeout: 10s
+      retries: 10
+    ports:
+      - 3307:3306
+    volumes:
+      - forumdata:/var/lib/mysql
+    networks:
+      - forumnet
+  adminmigrationimage:
+    image: adminmigrationimage
+    environment:
+      - REDIS_HOST=redis
+      - DATABASE_URL=forumDatabase
+    networks:
+      - forumnet
+  admin:
+    image: admin
+    environment:
+      - REDIS_HOST=redis
+      - DATABASE_URL=forumDatabase
+    depends_on:
+      - adminmigrationimage
+    ports:
+      - 5001:5001
+    networks:
+      - forumnet
+  voting:
+    image: voting
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+    ports:
+      - 5003:5003
+    networks:
+      - redisnet
+  demon:
+    image: demon
+    environment:
+      - REDIS_HOST=redis
+      - DATABASE_URL=forumDatabase
+    depends_on:
+      - redis
+    networks:
+      - redisnet
+      - forumnet
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    networks:
+      - forumnet
+      - authenet
+      - adminernet
+volumes:
+  authdata:
+  forumdata:
+networks:
+  authenet:
+  redisnet:
+  forumnet:
+  adminernet:

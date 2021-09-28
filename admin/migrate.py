@@ -1,10 +1,5 @@
-from re import match
-
-from flask import Flask, request, Response, jsonify
-from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, get_jwt_identity, get_jwt, \
-    jwt_required
+from flask import Flask
 from flask_migrate import Migrate, init, migrate, upgrade
-from sqlalchemy import and_
 from sqlalchemy_utils import database_exists, create_database
 
 from configuration import Configuration

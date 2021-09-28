@@ -1,13 +1,12 @@
-import re
-
-from dateutil.parser import parse, isoparse
-from flask import Flask, request, Response, jsonify
-
+from dateutil.parser import isoparse
+from flask import Flask, request, jsonify
+import os
+import time
 from datetime import datetime
 
 from sqlalchemy import and_, or_
 
-from admin.models import Participant, database, Election, Vote, ParticipantElection
+from models import Participant, database, Election, Vote, ParticipantElection
 from adminDecorator import roleCheck
 from configuration import  Configuration
 from flask_jwt_extended import JWTManager
@@ -126,7 +125,8 @@ def getResults():
     if(not curElection):
         return jsonify(message = 'Election does not exist.'),400
     if(curElection.end >= current_time and curElection.start >= current_time):
-        return jsonify(message = 'Election is ongoing.'),400
+        #'Election is ongoing.'
+        return jsonify(message = str(current_time)),400
 
     votes = Vote.query.filter(curElection.id == Vote.electionId).all()
     partcs = ParticipantElection.query.filter(ParticipantElection.electionId == curElection.id).all()
@@ -186,5 +186,7 @@ def getResults():
 
     return jsonify(participants=partcSol, invalidVotes = invalidVotes)
 if ( __name__ == "__main__" ):
+    os.environ['TZ'] = 'Europe/Belgrade'
+    time.tzset()
     database.init_app ( application )
-    application.run ( debug = True, port = 5001 );
+    application.run ( debug = True, host = "0.0.0.0", port = 5001 );

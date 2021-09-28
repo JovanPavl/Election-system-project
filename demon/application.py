@@ -1,20 +1,20 @@
-import redis
-from flask import Flask, request, Response, jsonify
-import io;
-import csv;
+from flask import Flask
 from redis import Redis
 from datetime import datetime
+import os
+import time
+from sqlalchemy import and_
 
-from sqlalchemy import and_, or_
-
-from admin.adminDecorator import roleCheck
-from admin.configuration import Configuration
-from admin.models import Vote, Election,database, Participant, ParticipantElection
+from configuration import Configuration
+from models import Vote, Election,database
 
 application = Flask ( __name__ )
 application.config.from_object ( Configuration )
 database.init_app ( application )
 
+#retardirane zone i imidzi vise nmg da verujem
+os.environ['TZ'] = 'Europe/Belgrade'
+time.tzset()
 while(True):
     try:
         with application.app_context() as context:

@@ -5,7 +5,7 @@ from flask_jwt_extended import JWTManager, create_access_token, create_refresh_t
     jwt_required
 from sqlalchemy import and_
 
-from authentication.configuration import Configuration
+from configuration import Configuration
 from models import database, User
 from email.utils import parseaddr
 from checker import  Checker
@@ -125,6 +125,10 @@ def deleteUser ( ):
     database.session.commit()
 
     return Response(200)
+
+@application.route("/", methods = ["GET"])
+def index():
+    return 'Hello world'
 if ( __name__ == "__main__" ):
     database.init_app ( application );
-    application.run ( debug = True, port = 5002 );
+    application.run ( debug = True, host = "0.0.0.0",port = 5002 );

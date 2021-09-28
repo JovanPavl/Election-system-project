@@ -7,7 +7,7 @@ from flask_migrate import Migrate, init, migrate, upgrade
 from sqlalchemy import and_
 from sqlalchemy_utils import database_exists, create_database
 
-from authentication.configuration import Configuration
+from configuration import Configuration
 from models import database, User
 from email.utils import parseaddr
 from checker import  Checker

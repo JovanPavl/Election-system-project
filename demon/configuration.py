@@ -1,6 +1,5 @@
 from datetime import timedelta
 import os
-
 redisHost = os.environ["REDIS_HOST"]
 databaseUrl = os.environ['DATABASE_URL']
 class Configuration ( ):

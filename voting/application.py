@@ -2,16 +2,12 @@ from flask import Flask, request, Response, jsonify
 import io
 import csv
 from redis import Redis
-from datetime import datetime
 
-from sqlalchemy import and_, or_
+from models import database
+from adminDecorator import roleCheck
+from configuration import  Configuration
 
-from admin.models import Participant, database, Election
-from admin.adminDecorator import roleCheck
-from admin.configuration import  Configuration
-from admin.models import Vote,Election, Participant, ParticipantElection
-
-from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, get_jwt_identity, get_jwt, \
+from flask_jwt_extended import JWTManager, get_jwt, \
     jwt_required
 
 application = Flask ( __name__ )
@@ -61,4 +57,4 @@ def vote():
 
 if ( __name__ == "__main__" ):
     database.init_app ( application );
-    application.run ( debug = True, port = 5003 );
+    application.run ( debug = True, host = "0.0.0.0", port = 5003 );

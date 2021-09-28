@@ -1,8 +1,8 @@
 from flask import Flask;
 from flask_migrate import Migrate, MigrateCommand;
 from flask_script import Manager;
-from configuration import Configuration;
-from models import database;
+from demon.configuration import Configuration;
+from demon.models import database;
 from sqlalchemy_utils import database_exists, create_database;
 
 application = Flask ( __name__ );

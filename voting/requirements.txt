@@ -1,0 +1,10 @@
+Flask==1.1.2
+SQLAlchemy < 1.4.0
+flask_sqlalchemy
+PyMySql
+sqlalchemy_utils
+flask_jwt_extended
+cryptography
+flask_migrate==2.7.0
+flask_script==2.0.6
+redis==3.5.3
