@@ -1,0 +1,96 @@
+version: '3'
+
+services:
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+    networks:
+      - redisnet
+  authenticationDatabase:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - authdata:/var/lib/mysql
+    networks:
+      - authenet
+  authenticationmigrationimage:
+    image: authenticationmigrationimage
+    environment:
+      - DATABASE_URL=authenticationDatabase
+    networks:
+      - authenet
+  authentication:
+    image: authentication
+    environment:
+      - DATABASE_URL=authenticationDatabase
+    ports:
+      - 5002:5002
+    networks:
+      - authenet
+
+
+  forumDatabase:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - forumdata:/var/lib/mysql
+    networks:
+      - forumnet
+  adminmigrationimage:
+    image: adminmigrationimage
+    environment:
+      - REDIS_HOST=redis
+      - DATABASE_URL=forumDatabase
+    networks:
+      - forumnet
+  admin:
+    image: admin
+    environment:
+      - REDIS_HOST=redis
+      - DATABASE_URL=forumDatabase
+    ports:
+      - 5001:5001
+    networks:
+      - forumnet
+  voting:
+    image: voting
+    environment:
+      - REDIS_HOST=redis
+    ports:
+      - 5003:5003
+    networks:
+      - redisnet
+    deploy:
+      replicas: 3
+  demon:
+    image: demon
+    environment:
+      - REDIS_HOST=redis
+      - DATABASE_URL=forumDatabase
+    networks:
+      - redisnet
+      - forumnet
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    networks:
+      - forumnet
+      - authenet
+      - adminernet
+volumes:
+  authdata:
+  forumdata:
+    
+networks:
+  authenet:
+    driver: overlay
+  redisnet:
+    driver: overlay
+  forumnet:
+    driver: overlay
+  adminernet:
+    driver: overlay
